@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تسجيل الدخول بـ Gemini — DataGuard AI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e2e8f0;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-top: 4px solid #4285f4;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 520px;
+      width: 90%;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .dg-logo {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .divider {
+      width: 1px;
+      height: 32px;
+      background: rgba(255,255,255,0.2);
+    }
+    .gemini-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #4285f4, #34a853, #ea4335, #fbbc05);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .gemini-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #4285f4, #ea4335);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      -webkit-text-fill-color: white;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #f1f5f9;
+    }
+    p {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .steps {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 20px 24px;
+      text-align: right;
+      margin-bottom: 28px;
+    }
+    .steps h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #cbd5e1;
+      flex-direction: row-reverse;
+    }
+    .step-num {
+      min-width: 22px;
+      height: 22px;
+      background: rgba(66,133,244,0.2);
+      border: 1px solid rgba(66,133,244,0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #4285f4;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #4285f4;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+    .btn-primary:hover { background: #3070e8; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(66,133,244,0.3); }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .btn-back:hover { color: #94a3b8; border-color: rgba(255,255,255,0.2); }
+    .warning {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: right;
+      margin-bottom: 24px;
+      font-size: 12px;
+      color: #fbbf24;
+      flex-direction: row-reverse;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-row">
+      <div class="dg-logo">DataGuard AI</div>
+      <div class="divider"></div>
+      <div class="gemini-badge">
+        <span>✦</span>
+        <span>Gemini</span>
+      </div>
+    </div>
+
+    <h1>ربط حساب Google Gemini</h1>
+    <p>للاستفادة من قدرات الذكاء الاصطناعي في DataGuard، تحتاج إلى مفتاح API من Google AI Studio.</p>
+
+    <div class="warning">
+      <span>⚠</span>
+      <span>مفتاح API يُخزَّن محلياً فقط على متصفحك ولا يُرسَل لأي خادم خارجي.</span>
+    </div>
+
+    <div class="steps">
+      <h3>خطوات الحصول على المفتاح</h3>
+      <div class="step"><div class="step-num">1</div><span>انقر الزر أدناه لفتح Google AI Studio</span></div>
+      <div class="step"><div class="step-num">2</div><span>سجّل الدخول بحسابك في Google</span></div>
+      <div class="step"><div class="step-num">3</div><span>اضغط على "Get API key" ثم "Create API key"</span></div>
+      <div class="step"><div class="step-num">4</div><span>انسخ المفتاح والصقه في DataGuard</span></div>
+    </div>
+
+    <a class="btn-primary" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">
+      <span>✦</span>
+      فتح Google AI Studio
+    </a>
+
+    <a class="btn-back" href="javascript:window.close()">
+      ← العودة للتطبيق
+    </a>
+  </div>
+
+  <script>
+    // Auto-open in 1 second if user came directly
+    setTimeout(() => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('auto') === '1') {
+        window.open('https://aistudio.google.com/apikey', '_blank', 'noopener,noreferrer');
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# NDR Dependencies
+# Python packages required for Network Detection & Response module
+
+# Core (already in Python stdlib)
+# - json
+# - sqlite3
+# - hashlib
+# - datetime
+# - collections
+
+# Optional: HTTP client for Ollama integration
+requests>=2.31.0

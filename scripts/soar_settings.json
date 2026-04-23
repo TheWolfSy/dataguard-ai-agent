@@ -1,0 +1,71 @@
+{
+  "exported_at": "2026-04-22T14:38:34.645630",
+  "settings": {
+    "auto_block_ip": {
+      "value": true,
+      "type": "boolean",
+      "description": "automatically block suspicious IP addresses",
+      "category": "network_response",
+      "risk_level": "high"
+    },
+    "auto_kill_process": {
+      "value": true,
+      "type": "boolean",
+      "description": "automatically kill malicious processes",
+      "category": "endpoint_response",
+      "risk_level": "high"
+    },
+    "auto_quarantine": {
+      "value": true,
+      "type": "boolean",
+      "description": "automatically quarantine infected files",
+      "category": "endpoint_response",
+      "risk_level": "medium"
+    },
+    "auto_isolate_host": {
+      "value": true,
+      "type": "boolean",
+      "description": "automatically isolate compromised hosts",
+      "category": "endpoint_response",
+      "risk_level": "critical"
+    },
+    "ai_assisted_modify": {
+      "value": true,
+      "type": "boolean",
+      "description": "allow AI to suggest and modify playbooks",
+      "category": "ai_assistance",
+      "risk_level": "medium"
+    },
+    "require_approval": {
+      "value": false,
+      "type": "boolean",
+      "description": "require manual approval for automated responses",
+      "category": "workflow",
+      "risk_level": "low"
+    },
+    "alert_channels": {
+      "value": [
+        "console",
+        "log"
+      ],
+      "type": "list",
+      "description": "channels for sending alerts",
+      "category": "notification",
+      "risk_level": "low"
+    },
+    "max_auto_response_time": {
+      "value": 30,
+      "type": "integer",
+      "description": "maximum seconds for automated response",
+      "category": "performance",
+      "risk_level": "low"
+    },
+    "incident_retention_days": {
+      "value": 90,
+      "type": "integer",
+      "description": "days to keep incidents in database",
+      "category": "storage",
+      "risk_level": "low"
+    }
+  }
+}
