@@ -30,7 +30,7 @@ jobs:
         run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
       
       - name: Deploy to Firebase Hosting
-        uses: w9jds/firebase-action@v2
+        uses: firebase/firebase-deploy-actions@v1
         with:
           args: deploy --only hosting
         env:
