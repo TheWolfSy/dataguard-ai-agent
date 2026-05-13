@@ -8,3 +8,14 @@ coverage/
 !.env.example
 password_manager.json
 users_id.json
+
+# Capacitor / Android
+android/app/build/
+android/.gradle/
+android/build/
+android/captures/
+android/local.properties
+*.apk
+*.aab
+*.keystore
+*.jks
