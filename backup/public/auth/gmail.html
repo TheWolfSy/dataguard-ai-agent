@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataGuard AI — Gmail Authorization</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      background: #f4f4f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px 32px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    }
+    .logo { font-size: 36px; margin-bottom: 16px; }
+    .title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #18181b;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    .status {
+      font-size: 13px;
+      color: #52525b;
+      margin-top: 16px;
+      min-height: 22px;
+      line-height: 1.5;
+    }
+    .status.success { color: #059669; font-weight: 600; }
+    .status.error   { color: #dc2626; font-weight: 600; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #e4e4e7;
+      border-top-color: #18181b;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 20px auto 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🔐</div>
+    <div class="title">DataGuard AI</div>
+    <div class="title" style="font-size:12px;font-weight:400;color:#71717a;margin-top:4px">Gmail Authorization</div>
+    <div class="spinner" id="spinner"></div>
+    <div class="status" id="status">جاري معالجة التفويض...</div>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var code  = params.get('code');
+      var state = params.get('state');
+      var error = params.get('error');
+
+      var statusEl  = document.getElementById('status');
+      var spinnerEl = document.getElementById('spinner');
+
+      function finish(msg, isError) {
+        if (spinnerEl) spinnerEl.className = 'spinner hidden';
+        if (statusEl) {
+          statusEl.textContent = msg;
+          statusEl.className = 'status ' + (isError ? 'error' : 'success');
+        }
+        setTimeout(function () { window.close(); }, 2000);
+      }
+
+      if (!window.opener) {
+        finish('خطأ: يجب فتح هذه الصفحة من داخل التطبيق.', true);
+        return;
+      }
+
+      var targetOrigin = window.location.origin;
+
+      if (error) {
+        window.opener.postMessage(
+          { type: 'GMAIL_AUTH_CODE', error: error, state: state },
+          targetOrigin
+        );
+        finish('تم رفض الوصول: ' + error, true);
+        return;
+      }
+
+      if (!code) {
+        window.opener.postMessage(
+          { type: 'GMAIL_AUTH_CODE', error: 'no_code', state: state },
+          targetOrigin
+        );
+        finish('لم يتم استلام رمز التفويض.', true);
+        return;
+      }
+
+      // Success — send code to parent
+      window.opener.postMessage(
+        { type: 'GMAIL_AUTH_CODE', code: code, state: state },
+        targetOrigin
+      );
+      finish('✓ تم التفويض بنجاح! جاري إغلاق النافذة...', false);
+    })();
+  </script>
+</body>
+</html>

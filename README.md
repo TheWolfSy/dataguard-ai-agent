@@ -2,7 +2,7 @@
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Version](https://img.shields.io/badge/version-1.0.0-orange)
+![Version](https://img.shields.io/badge/version-2.0.0-orange)
 
 > AI-powered security platform for data protection and threat prevention
 
@@ -22,9 +22,13 @@ DataGuard AI is an advanced security agent that uses artificial intelligence to 
 - Node.js 18+
 - npm or yarn
 - Modern web browser (Chrome, Firefox, Safari, Edge)
-- Android Studio (for building APK)
+- Flutter SDK 3.41.9+ (for mobile builds)
+- Android Studio (for Android builds)
+- Xcode (for iOS builds)
 
 ## Installation
+
+### Web App (React)
 
 ```bash
 # Clone the repository
@@ -40,6 +44,24 @@ cp .env.example .env
 
 # Run in development mode
 npm run dev
+```
+
+### Mobile App (Flutter)
+
+```bash
+cd dataguard_mobile
+
+# Get Flutter dependencies
+flutter pub get
+
+# Run on connected device
+flutter run
+
+# Build for Android
+flutter build apk --release
+
+# Build for iOS
+flutter build ios --release
 ```
 
 ## Environment Variables
@@ -78,9 +100,10 @@ VITE_DEV_BYPASS_PASSWORD=your_dev_password
 
 ## Available Commands
 
+### Web App
 ```bash
 # Run in development mode
-npm run build
+npm run dev
 
 # Build for production
 npm run build
@@ -95,16 +118,102 @@ npm run clean
 npm run lint
 ```
 
+### Mobile App
+```bash
+# Analyze Dart code
+cd dataguard_mobile
+flutter analyze
+
+# Run tests
+flutter test
+
+# Build for Android
+flutter build apk --release
+
+# Build for iOS (macOS only)
+flutter build ios --release
+
+# Shorebird OTA update
+shorebird patch --flavor=production
+```
+
+## Mobile App (Flutter)
+
+The mobile version is built with **Flutter** and replaces the previous Ionic Capacitor wrapper. It provides a native experience on both Android and iOS with the same feature set as the web app.
+
+### Features
+
+- **Cross-platform**: Android & iOS from a single codebase
+- **Over-the-Air Updates**: Powered by Shorebird Code Push for instant updates without app store review
+- **Glassmorphism UI**: Native recreation of the web app's glassmorphism design
+- **Firebase Auth**: Secure authentication with email/password
+- **RTL Support**: Full Arabic (RTL) and English localization
+- **Dark/Light Theme**: Persistent theme preference
+- **Real-time Dashboard**: Stat cards, recent logs, threat breakdown
+- **Data Logs**: Searchable, filterable log viewer
+- **Security Policies**: Policy management with sync status
+- **Profile Management**: Account info and security settings
+
+### Project Structure
+
+```
+dataguard_mobile/
+├── lib/
+│   ├── main.dart              # App entry point with providers
+│   ├── app.dart               # MaterialApp with auth gating
+│   ├── i18n/                  # Translations (EN/AR)
+│   ├── theme/                 # Colors, ThemeData (glassmorphism)
+│   ├── models/                # Data models
+│   ├── services/              # Firebase config, auth, updates
+│   ├── providers/             # State management (Provider)
+│   ├── screens/
+│   │   ├── auth/              # Login / Register / Recover
+│   │   ├── home/              # Shell with sidebar
+│   │   ├── dashboard/         # Main dashboard
+│   │   ├── logs/              # Data logs viewer
+│   │   ├── policies/          # Security policies
+│   │   ├── profile/           # User profile
+│   │   └── settings/          # App settings & updates
+│   └── widgets/               # Reusable UI components
+├── android/                   # Android native project
+└── pubspec.yaml               # Dart dependencies
+```
+
+### Tech Stack
+
+- **Framework**: Flutter 3.41.9
+- **State Management**: Provider
+- **Authentication**: Firebase Auth
+- **Local Storage**: SharedPreferences
+- **OTA Updates**: Shorebird Code Push
+- **UI**: Material 3 + Custom glassmorphism theming
+- **Encryption**: encrypt package (AES-256)
+
 ## Building APK for Android
 
-The application uses **Ionic Capacitor** to wrap the web app into a native Android application.
+The application can be built as a native Android app using either the legacy Capacitor build or the new Flutter build.
 
-### Prerequisites
+### Flutter APK Build
 
-- **Android Studio** (includes Android SDK)
-- **Java JDK 17+**
+```bash
+cd dataguard_mobile
 
-### APK Build Steps
+# Debug APK
+flutter build apk --debug
+
+# Release APK
+flutter build apk --release
+
+# App Bundle (for Play Store)
+flutter build appbundle --release
+```
+
+The APK will be at:
+```
+dataguard_mobile/build/app/outputs/flutter-apk/app-release.apk
+```
+
+### Capacitor APK Build (Legacy)
 
 ```bash
 # 1. Build the web app
@@ -116,31 +225,19 @@ npx cap copy android
 # 3. Open Android Studio
 npx cap open android
 
-# 4. In Android Studio:
-#    Build → Build Bundle(s) / APK → Build APK
-```
-
-The APK will be at:
-```
-android/app/build/outputs/apk/debug/app-debug.apk
-```
-
-### Updating APK after code changes
-```bash
-npm run build
-npx cap copy android
-# Then rebuild the APK from Android Studio
+# 4. In Android Studio: Build → Build Bundle(s) / APK → Build APK
 ```
 
 ## Technical Stack
 
-- **Frontend**: React 18 + TypeScript + Vite
+- **Frontend (Web)**: React 18 + TypeScript + Vite
 - **Styling**: Tailwind CSS + Framer Motion
-- **Mobile**: Ionic Capacitor (Android APK)
+- **Mobile**: Flutter (native Android & iOS)
 - **Database**: PGlite (SQLite in the browser)
 - **Encryption**: Web Crypto API (AES-256-GCM)
 - **AI**: OpenAI API, Gemini, Claude, Ollama
 - **Email**: EmailJS
+- **OTA Updates**: Shorebird Code Push
 
 ## Security
 
@@ -149,10 +246,20 @@ npx cap copy android
 - ✅ Input validation at application and database level
 - ✅ Protection against CSRF and XSS
 - ✅ Data encryption in transit (TLS)
+- ✅ Firebase security rules for data access
 
 ## Release
 
-### v1.0.0 (Current)
+### v2.0.0 (Current - Beta)
+- Flutter mobile app replacing Ionic Capacitor
+- Native Android & iOS support
+- Shorebird OTA update system
+- Full glassmorphism UI recreation
+- Firebase authentication
+- Dashboard, Logs, Policies, Profile, Settings screens
+- Dark/Light theme with RTL support
+
+### v1.0.0
 - Initial release of DataGuard AI Agent
 - Password management with AES-256-GCM encryption
 - Real-time security dashboard
@@ -166,7 +273,8 @@ npx cap copy android
 
 | Platform | Version | Link |
 |----------|---------|------|
-| Android APK | v1.0.0 | [Download APK](android/app/build/outputs/apk/debug/app-debug.apk) |
+| Android APK (Flutter) | v2.0.0-beta | [Download APK](dataguard_mobile/build/app/outputs/flutter-apk/app-release.apk) |
+| Android APK (Legacy) | v1.0.0 | [Download APK](android/app/build/outputs/apk/debug/app-debug.apk) |
 | Web App | v1.0.0 | [Live Demo](https://dataguardai.com) |
 
 ## Contributing

@@ -1,0 +1,5 @@
+{
+  "name": "DataGuard AI Agent",
+  "description": "An intelligent agent for secure data handling, PII detection, and automated protection strategies.",
+  "requestFramePermissions": []
+}

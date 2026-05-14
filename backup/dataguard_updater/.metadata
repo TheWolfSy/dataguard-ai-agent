@@ -1,0 +1,15 @@
+version: 1.0.0+1
+channel: stable
+project_type: app
+
+migration:
+  platforms:
+    - platform: root
+      create_revision: 3.22.0-stable
+      base_revision: 3.22.0-stable
+    - platform: android
+      create_revision: 3.22.0-stable
+      base_revision: 3.22.0-stable
+    - platform: ios
+      create_revision: 3.22.0-stable
+      base_revision: 3.22.0-stable

@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with role-based access control.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["Administrator", "Data Analyst", "Read-Only User"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "Audit Log",
+      "description": "Detailed logs of all data access and modifications.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User who performed the action" },
+        "userEmail": { "type": "string" },
+        "operation": { "type": "string", "enum": ["READ", "CREATE", "UPDATE", "DELETE", "SCAN", "SECURITY"] },
+        "resourcePath": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "userEmail", "operation", "resourcePath", "timestamp"]
+    },
+    "DataLog": {
+      "title": "Data Log",
+      "description": "A log of data handled by the AI agent, including its classification and protection status.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Owner's user ID" },
+        "content": { "type": "string", "description": "The raw data content" },
+        "classification": { "type": "string", "enum": ["Public", "Internal", "Confidential", "Highly Sensitive"], "description": "Data classification level" },
+        "piiDetected": { "type": "boolean", "description": "Whether PII was detected" },
+        "piiDetails": { "type": "string", "description": "Details of detected PII (JSON string)" },
+        "protectionStatus": { "type": "string", "enum": ["Unprotected", "Masked", "Encrypted", "Redacted"], "description": "Current protection state" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["uid", "content", "classification", "createdAt"]
+    },
+    "SecurityPolicy": {
+      "title": "Security Policy",
+      "description": "Custom security policies defined by the user for the AI agent, optionally backed by a remote JSON rule reference.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Owner's user ID" },
+        "name": { "type": "string", "description": "Policy name" },
+        "rules": { "type": "string", "description": "Policy rules in natural language" },
+        "ruleReferenceId": { "type": "string", "description": "Linked JSON rule reference identifier" },
+        "sourceUrl": { "type": "string", "description": "Remote HTTPS endpoint used as the rule source" },
+        "transportEncryption": { "type": "string", "description": "Transport and cache encryption mode" },
+        "syncStatus": { "type": "string", "enum": ["synced", "error", "manual"] },
+        "lastSyncedAt": { "type": "string", "format": "date-time", "description": "Last successful sync time" },
+        "rulesJson": { "type": "string", "description": "Cached JSON representation of the imported rules" },
+        "encryptedRulesJson": { "type": "string", "description": "Encrypted local cache of the imported JSON rules" },
+        "integrityHash": { "type": "string", "description": "SHA-256 integrity hash of the cached JSON rules" },
+        "isActive": { "type": "boolean", "description": "Whether the policy is active" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["uid", "name", "rules", "isActive", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/data_logs/{logId}": {
+      "schema": "DataLog",
+      "description": "Collection of data logs handled by the agent."
+    },
+    "/security_policies/{policyId}": {
+      "schema": "SecurityPolicy",
+      "description": "Collection of user-defined security policies."
+    },
+    "/audit_logs/{auditId}": {
+      "schema": "AuditLog",
+      "description": "Collection of system audit logs."
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles with roles."
+    }
+  }
+}

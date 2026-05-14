@@ -1,0 +1,3 @@
+app_id: dataguard-updater
+channel: stable
+auto_update: true

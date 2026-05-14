@@ -1,0 +1,39 @@
+name: dataguard_mobile
+description: "DataGuard AI - Mobile Application"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^3.12.1
+  firebase_auth: ^5.5.1
+
+  # State Management
+  provider: ^6.1.2
+
+  # UI
+  cupertino_icons: ^1.0.8
+
+  # Services
+  http: ^1.2.2
+  encrypt: ^5.0.3
+  shared_preferences: ^2.3.5
+  path_provider: ^2.1.5
+  intl: ^0.20.2
+
+  # OTA Updates
+  shorebird_code_push: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0

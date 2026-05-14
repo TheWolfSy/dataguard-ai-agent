@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#09090b" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="description" content="نظام حماية البيانات بالذكاء الاصطناعي - DataGuard AI Agent" />
+    <meta name="robots" content="noindex, nofollow" />
+    <!-- DNS prefetch لتسريع طلبات AI APIs -->
+    <link rel="dns-prefetch" href="https://generativelanguage.googleapis.com" />
+    <link rel="dns-prefetch" href="https://api.openai.com" />
+    <link rel="preconnect" href="https://generativelanguage.googleapis.com" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>DataGuard AI Agent</title>
+    <script>
+      try {
+        if (localStorage.getItem('dataguard.theme') !== 'light') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <div id="recaptcha-container"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
