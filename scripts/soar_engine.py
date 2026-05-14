@@ -744,14 +744,56 @@ class PlaybookManager:
     
     def _evaluate_condition(self, condition: str, data: Dict) -> bool:
         try:
-            for key, value in data.items():
-                if isinstance(value, str):
-                    condition = condition.replace(f"{{{key}}}", f'"{value}"')
-            
-            result = eval(condition, {"__builtins__": {}}, {})
+            result = self._safe_eval(condition, data)
             return bool(result)
         except:
             return False
+
+    def _safe_eval(self, expr: str, data: Dict) -> bool:
+        import re
+        safe = re.sub(r'\{(\w+)\}', lambda m: str(data.get(m.group(1), '')), expr)
+        safe = safe.replace('"', "'")
+        tokens = safe.split()
+        if not tokens:
+            return False
+        i = 0
+        stack = []
+        while i < len(tokens):
+            t = tokens[i]
+            if t == 'in':
+                left = stack.pop() if stack else ''
+                items = []
+                i += 1
+                while i < len(tokens):
+                    item = tokens[i].strip("'")
+                    if item == ']':
+                        break
+                    if item != '[' and item != ',':
+                        items.append(item)
+                    i += 1
+                stack.append(left in items)
+            elif t == '==':
+                right = tokens[i + 1].strip("'") if i + 1 < len(tokens) else ''
+                left = stack.pop() if stack else ''
+                stack.append(left == right)
+                i += 1
+            elif t == '!=':
+                right = tokens[i + 1].strip("'") if i + 1 < len(tokens) else ''
+                left = stack.pop() if stack else ''
+                stack.append(left != right)
+                i += 1
+            elif t == 'and':
+                right = self._safe_eval(' '.join(tokens[i + 1:]), data)
+                left = stack.pop() if stack else False
+                return left and right
+            elif t == 'or':
+                right = self._safe_eval(' '.join(tokens[i + 1:]), data)
+                left = stack.pop() if stack else False
+                return left or right
+            else:
+                stack.append(t.strip("'"))
+            i += 1
+        return stack[0] if stack else False
 
 
 class ActionExecutor:

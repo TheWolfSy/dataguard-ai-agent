@@ -218,14 +218,13 @@ export function ProfilePage({
             { label: t('profile.fullName'), value: localProfile?.fullName },
             { label: t('profile.email'), value: localProfile?.email ?? user?.email },
             { label: t('profile.backupEmail'), value: localProfile?.backupEmail },
-            { label: t('profile.phone'), value: localProfile?.phoneNumber },
             {
               label: t('profile.birthDate'),
               value: localProfile?.birthDate ? new Date(localProfile.birthDate).toLocaleDateString() : undefined,
             },
             {
               label: t('profile.verification'),
-              value: `${localProfile?.emailVerified ? t('profile.emailVerified') : t('profile.emailNotVerified')} / ${localProfile?.phoneVerified ? t('profile.phoneVerified') : t('profile.phoneNotVerified')}`,
+              value: localProfile?.emailVerified ? t('profile.emailVerified') : t('profile.emailNotVerified'),
             },
           ].map(({ label, value }) => (
         <div key={label} className="p-3 rounded" style={{ background: 'rgba(6,13,31,0.7)', border: '1px solid rgba(96,165,250,0.12)' }}>
@@ -239,7 +238,6 @@ export function ProfilePage({
           <h4 className="text-xs font-bold uppercase tracking-widest text-slate-300">{t('profile.editInfo')}</h4>
           <input type="text" className="w-full px-3 py-2 rounded-lg text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ background: 'rgba(6,13,31,0.8)', border: '1px solid rgba(96,165,250,0.2)' }} placeholder={t('profile.fullNamePlaceholder')} value={profileEditFullName} onChange={(e) => setProfileEditFullName(e.target.value)} />
           <input type="email" className="w-full px-3 py-2 rounded-lg text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ background: 'rgba(6,13,31,0.8)', border: '1px solid rgba(96,165,250,0.2)' }} placeholder={t('profile.backupEmailPlaceholder')} value={profileEditBackupEmail} onChange={(e) => setProfileEditBackupEmail(e.target.value)} />
-          <input type="text" className="w-full px-3 py-2 rounded-lg text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ background: 'rgba(6,13,31,0.8)', border: '1px solid rgba(96,165,250,0.2)' }} placeholder={t('profile.phonePlaceholder')} value={profileEditPhone} onChange={(e) => setProfileEditPhone(e.target.value)} />
           <input type="date" className="w-full px-3 py-2 rounded-lg text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ background: 'rgba(6,13,31,0.8)', border: '1px solid rgba(96,165,250,0.2)' }} value={profileEditBirthDate} onChange={(e) => setProfileEditBirthDate(e.target.value)} />
           <input type="password" className="w-full px-3 py-2 rounded-lg text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ background: 'rgba(6,13,31,0.8)', border: '1px solid rgba(96,165,250,0.2)' }} placeholder={t('profile.currentPasswordConfirm')} value={profileEditCurrentPassword} onChange={(e) => setProfileEditCurrentPassword(e.target.value)} />
           <button type="submit" disabled={isUpdatingProfileInfo} className="w-full py-2 rounded text-white text-xs font-bold disabled:opacity-50" style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}>

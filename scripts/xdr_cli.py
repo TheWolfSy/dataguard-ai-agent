@@ -17,13 +17,13 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def load_edr_module():
-    from edr_engine import EDREngine, handle_command as edr_handle, CRITICAL_FILES
-    return edr_engine, CRITICAL_FILES
+    import edr_engine as _edr
+    return _edr
 
 
 def load_ndr_module():
-    from ndr_engine import handle_command as ndr_handle
-    return ndr_engine
+    import ndr_engine as _ndr
+    return _ndr
 
 
 def load_ndra_module():
@@ -82,7 +82,8 @@ class DataGuardXDR:
         return edr_engine.handle_command(args, self.edr_db)
     
     def ndr(self, args: List[str]) -> Dict:
-        return self.ndr_engine.handle_command(args, self.ndr_db)
+        import ndr_engine as _ndr
+        return _ndr.handle_command(args, self.ndr_db)
     
     def ndra(self, args: List[str]) -> Dict:
         import traffic_flow
@@ -148,11 +149,8 @@ class DataGuardXDR:
         return {"error": f"Unknown AI command: {command}"}
     
     def status(self) -> Dict:
-        import edr_engine
-        import ndr_engine
+        import edr_engine as _edr
         import sqlite3
-        
-        import edr_engine
         
         from edr_engine import CRITICAL_FILES
         
@@ -161,7 +159,7 @@ class DataGuardXDR:
             if os.path.exists(os.path.join(SCRIPT_DIR, f))
         ]
         
-        edr = edr_engine.EDREngine(self.edr_db, monitored)
+        edr = _edr.EDREngine(self.edr_db, monitored)
         edr_status = edr.get_security_summary()
         
         edr_conn = sqlite3.connect(self.edr_db)
@@ -374,11 +372,9 @@ Examples:
             if not args:
                 result = {"error": "Usage: ai analyze|recommend"}
             elif args[0] == "analyze":
-                sys.argv = ["threat_intel.py", "analyze"]
-                result = threat_intel.main() or {}
+                result = threat_intel.analyze_threats() or {}
             elif args[0] == "recommend":
-                sys.argv = ["threat_intel.py", "recommend"]
-                result = threat_intel.main() or {}
+                result = threat_intel.get_recommendations() or {}
             else:
                 result = {"error": f"Unknown AI command: {args[0]}"}
         

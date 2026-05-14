@@ -69,17 +69,14 @@ export type AuthUser = {
   fullName: string;
   email: string;
   backupEmail: string;
-  phoneNumber: string;
   birthDate: string;
   avatarDataUrl?: string;
   emailVerified: boolean;
-  phoneVerified: boolean;
   createdAt?: string;
 };
 
 const EMAIL_VERIFICATION_PURPOSE = 'REGISTER_EMAIL_PHONE';
 const EMAIL_RECOVERY_PURPOSE = 'RECOVERY_EMAIL';
-const PHONE_RECOVERY_PURPOSE = 'RECOVERY_PHONE';
 const RECOVERY_GRANTED_PURPOSE = 'RECOVERY_GRANTED';
 const PROFILE_EMAIL_VERIFY_PURPOSE = 'PROFILE_EMAIL_VERIFY';
 const INACTIVITY_DAYS = 90;
@@ -89,7 +86,6 @@ export type ProfileUpdatePayload = {
   currentPassword: string;
   fullName: string;
   backupEmail: string;
-  phoneNumber: string;
   birthDate: string;
 };
 
@@ -205,10 +201,8 @@ function isInactiveBeyondLimit(lastActivityAt: string | Date): boolean {
 
 async function saveVerificationCodes(params: {
   email: string;
-  phoneNumber?: string;
   purpose: string;
   emailCode?: string;
-  phoneOtp?: string;
   ttlMinutes?: number;
 }): Promise<void> {
   const db = await getAuthDb();
@@ -218,15 +212,13 @@ async function saveVerificationCodes(params: {
 
   await db.query(
     `INSERT INTO auth_verifications (
-      id, email, phone_number, purpose, email_code_hash, phone_otp_hash, expires_at, consumed
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, FALSE)`,
+      id, email, purpose, email_code_hash, expires_at, consumed
+    ) VALUES ($1, $2, $3, $4, $5, FALSE)`,
     [
       id,
       normalizeEmail(params.email),
-      params.phoneNumber ? normalizePhone(params.phoneNumber) : null,
       params.purpose,
       params.emailCode ? await sha256(params.emailCode) : null,
-      params.phoneOtp ? await sha256(params.phoneOtp) : null,
       expires,
     ]
   );
@@ -258,16 +250,6 @@ async function sendEmailCodeSecure(
   await sendVerificationEmail(email, code, purpose);
 }
 
-// Local OTP abstraction. In production, use SMS gateway over HTTPS/TLS.
-async function sendPhoneOtpSecure(phoneNumber: string, otp: string): Promise<void> {
-  const payload = {
-    protocol: 'OTP_OVER_HTTPS_TLS',
-    to: phoneNumber,
-    otp,
-  };
-  console.info('Local OTP simulation:', payload);
-}
-
 export async function startRegistrationVerification(email: string): Promise<void> {
   const normalizedEmail = normalizeEmail(email);
   if (isDevBypassEmail(normalizedEmail)) return;
@@ -291,7 +273,6 @@ export async function registerUser(payload: RegisterPayload & { emailCode: strin
   const fullName = sanitizeInput(payload.fullName, 128);
   const email = sanitizeEmailInput(payload.email);
   const backupEmail = sanitizeEmailInput(payload.backupEmail);
-  const phone = ''; // تمت إزالة استخدام phone حفاظاً على الخصوصية
   const birthDate = sanitizeInput(payload.birthDate, 16);
   const password = sanitizePasswordInput(payload.password);
   const shouldBypass = isDevBypassEmail(email);
@@ -334,20 +315,19 @@ export async function registerUser(payload: RegisterPayload & { emailCode: strin
 
   await db.query(
     `INSERT INTO auth_users (
-      id, full_name, email, backup_email, phone_number, birth_date,
-      password_hash, password_salt, email_verified, phone_verified,
+      id, full_name, email, backup_email, birth_date,
+      password_hash, password_salt, email_verified,
       q1, q1_answer_hash, q2, q2_answer_hash, q3, q3_answer_hash, last_activity_at
     ) VALUES (
-      $1, $2, $3, $4, $5, $6,
-      $7, $8, TRUE, FALSE,
-      $9, $10, $11, $12, $13, $14, NOW()
+      $1, $2, $3, $4, $5,
+      $6, $7, TRUE,
+      $8, $9, $10, $11, $12, $13, NOW()
     )`,
     [
       userId,
       fullName,
       email,
       backupEmail,
-      phone,
       birthDate,
       passwordHash,
       salt,
@@ -461,11 +441,9 @@ export async function loginUser(emailRaw: string, password: string, ip?: string)
     fullName: row.full_name,
     email: row.email,
     backupEmail: row.backup_email,
-    phoneNumber: row.phone_number,
     birthDate: row.birth_date,
     avatarDataUrl: row.avatar_data_url ?? undefined,
     emailVerified: row.email_verified,
-    phoneVerified: row.phone_verified,
     createdAt: row.created_at,
   };
 }
@@ -540,11 +518,9 @@ export async function getLocalUserProfile(emailRaw: string): Promise<AuthUser> {
     fullName: row.full_name,
     email: row.email,
     backupEmail: row.backup_email,
-    phoneNumber: row.phone_number,
     birthDate: row.birth_date,
     avatarDataUrl: row.avatar_data_url ?? undefined,
     emailVerified: row.email_verified,
-    phoneVerified: row.phone_verified,
     createdAt: row.created_at,
   };
 }
@@ -585,33 +561,19 @@ export async function updateLocalUserProfileWithCurrentPassword(payload: Profile
     throw new Error('يجب أن يكون العمر 18 سنة على الأقل.');
   }
 
-  const newPhone = normalizePhone(payload.phoneNumber);
-
-  // If the phone number changed, reset phone_verified to FALSE
-  const currentRes = await db.query<any>(
-    `SELECT phone_number FROM auth_users WHERE email = $1 LIMIT 1`,
-    [email]
-  );
-  const currentPhone = currentRes.rows[0]?.phone_number ?? '';
-  const phoneChanged = newPhone !== currentPhone;
-
-  // If birthDate is empty, keep the existing value by passing null
   const birthDateValue = payload.birthDate || null;
 
   await db.query(
     `UPDATE auth_users
      SET full_name = $1,
          backup_email = $2,
-         phone_number = $3,
-         birth_date = COALESCE($4::date, birth_date),
-         phone_verified = ${phoneChanged ? 'FALSE' : 'phone_verified'},
+         birth_date = COALESCE($3::date, birth_date),
          updated_at = NOW(),
          last_activity_at = NOW()
-     WHERE email = $5`,
+     WHERE email = $4`,
     [
       payload.fullName.trim(),
       normalizeEmail(payload.backupEmail),
-      newPhone,
       birthDateValue,
       email,
     ]
@@ -671,42 +633,7 @@ export async function verifyEmailRecoveryCode(emailRaw: string, code: string): P
   await saveVerificationCodes({ email, purpose: RECOVERY_GRANTED_PURPOSE, ttlMinutes: 15 });
 }
 
-// ── Step 2: Send phone OTP ────────────────────────────────────────────────
-export async function sendPhoneRecoveryOtp(emailRaw: string): Promise<{ devPhoneOtp?: string; hasPhone: boolean }> {
-  const db = await getAuthDb();
-  const email = normalizeEmail(emailRaw);
-  const res = await db.query<any>(`SELECT phone_number FROM auth_users WHERE email = $1 LIMIT 1`, [email]);
-  const row = res.rows[0];
-  if (!row) throw new Error('البريد الإلكتروني غير مسجل.');
-  if (!row.phone_number) return { hasPhone: false };
-
-  const otp = getRandomCode(6);
-  await saveVerificationCodes({
-    email,
-    phoneNumber: row.phone_number,
-    purpose: PHONE_RECOVERY_PURPOSE,
-    phoneOtp: otp,
-    ttlMinutes: 10,
-  });
-  await sendPhoneOtpSecure(row.phone_number, otp);
-  return import.meta.env.DEV ? { devPhoneOtp: otp, hasPhone: true } : { hasPhone: true };
-}
-
-// ── Step 2 verify: Check phone OTP → grant recovery token ────────────────
-export async function verifyPhoneRecoveryOtp(emailRaw: string, otp: string): Promise<void> {
-  const email = normalizeEmail(emailRaw);
-  const verification = await readLatestVerification(email, PHONE_RECOVERY_PURPOSE);
-  if (!verification) throw new Error('لا يوجد رمز تحقق صالح. أرسل OTP أولاً.');
-  if (new Date(verification.expires_at).getTime() < Date.now()) throw new Error('انتهت صلاحية رمز OTP.');
-
-  const hash = await sha256(otp.trim());
-  if (verification.phone_otp_hash !== hash) throw new Error('رمز OTP الهاتف غير صحيح.');
-
-  await consumeVerification(verification.id);
-  await saveVerificationCodes({ email, purpose: RECOVERY_GRANTED_PURPOSE, ttlMinutes: 15 });
-}
-
-// ── Step 3: Get security questions ───────────────────────────────────────
+// ── Step 2: Get security questions ───────────────────────────────────────
 export async function getRecoveryQuestions(emailRaw: string): Promise<{ q1: string; q2: string; q3: string }> {
   const db = await getAuthDb();
   const email = normalizeEmail(emailRaw);

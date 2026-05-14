@@ -22,7 +22,6 @@ const TEST_USER = {
   fullName: 'أحمد محمد التجريبي',
   email: 'test.user@dataguard-test.com',
   backupEmail: 'backup.test@dataguard-test.com',
-  phoneNumber: '+201012345678',
   birthDate: '1995-06-15',
   password: process.env.TEST_USER_PASSWORD || '',
   securityQuestions: {
@@ -76,7 +75,6 @@ async function testCreateAccount(): Promise<string | null> {
 
   const db = await getAuthDb();
   const email = TEST_USER.email.trim().toLowerCase();
-  const phone = TEST_USER.phoneNumber.replace(/\s+/g, '').trim();
 
   // إنشاء رمز تحقق وهمي وحفظه في قاعدة البيانات
   const fakeEmailCode = '123456';
@@ -85,9 +83,9 @@ async function testCreateAccount(): Promise<string | null> {
   const expiresAt = new Date(Date.now() + 10 * 60_000).toISOString();
 
   await db.query(
-    `INSERT INTO auth_verifications (id, email, phone_number, purpose, email_code_hash, phone_otp_hash, expires_at, consumed)
-     VALUES ($1, $2, $3, $4, $5, NULL, $6, FALSE)`,
-    [verificationId, email, phone, 'REGISTER_EMAIL_PHONE', fakeCodeHash, expiresAt]
+    `INSERT INTO auth_verifications (id, email, purpose, email_code_hash, expires_at, consumed)
+     VALUES ($1, $2, $3, $4, $5, FALSE)`,
+    [verificationId, email, 'REGISTER_EMAIL_PHONE', fakeCodeHash, expiresAt]
   );
   log('تم إنشاء رمز تحقق وهمي في قاعدة البيانات.');
 
@@ -97,7 +95,7 @@ async function testCreateAccount(): Promise<string | null> {
       emailCode: fakeEmailCode,
     };
     const { userId } = await registerUser(payload);
-    pass('إنشاء الحساب', `البريد: ${email} | الهاتف: ${phone} | id: ${userId}`);
+    pass('إنشاء الحساب', `البريد: ${email} | id: ${userId}`);
     return userId;
   } catch (err: any) {
     fail('إنشاء الحساب', err.message);
